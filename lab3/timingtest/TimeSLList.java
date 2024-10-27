@@ -21,8 +21,38 @@ public class TimeSLList {
         timeGetLast();
     }
 
+    /* timeHelper helps record the data for each tests given the NUMBER. */
+    private static void timeHelper(AList<Integer> Ns, AList<Double> times, AList<Integer> opCounts, int number) {
+        SLList<Integer> testSLList = new SLList<>();
+        for (int i = 0; i < number; i += 1) {
+            testSLList.addLast(i);
+        }
+
+        Stopwatch stopwatch = new Stopwatch();
+        for (int j = 0; j < 10000; j += 1) {
+            testSLList.getLast();
+        }
+        double timeInSeconds = stopwatch.elapsedTime();
+
+        Ns.addLast(number);
+        times.addLast(timeInSeconds);
+        opCounts.addLast(10000);  
+    }
+
     public static void timeGetLast() {
         // TODO: YOUR CODE HERE
+        AList<Integer> Ns = new AList<>();
+        AList<Double> times = new AList<>();
+        AList<Integer> opCounts = new AList<>();
+        timeHelper(Ns, times, opCounts, 1000);
+        timeHelper(Ns, times, opCounts, 2000);
+        timeHelper(Ns, times, opCounts, 4000);
+        timeHelper(Ns, times, opCounts, 8000);
+        timeHelper(Ns, times, opCounts, 16000);
+        timeHelper(Ns, times, opCounts, 32000);
+        timeHelper(Ns, times, opCounts, 64000);
+        timeHelper(Ns, times, opCounts, 128000);
+        printTimingTable(Ns, times, opCounts);
     }
 
 }
