@@ -48,7 +48,6 @@ public class TimeAList {
         timeHelper(Ns, times, opCounts, 32000);
         timeHelper(Ns, times, opCounts, 64000);
         timeHelper(Ns, times, opCounts, 128000);
-        timeHelper(Ns, times, opCounts, 100000000);
         printTimingTable(Ns, times, opCounts);
     }
 }
