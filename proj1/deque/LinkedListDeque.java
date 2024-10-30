@@ -105,4 +105,39 @@ public class LinkedListDeque<Item> {
 		size -= 1;
 		return target;
 	}
+
+	/* Returns the item at the given index. */
+	public Item get(int index) {
+		if (index >= size) {
+			return null;
+		}
+
+		LinkedList current = sentinel.rest;
+		int count = 0;
+		while (count < index) {
+			current = current.rest;
+			count += 1;
+		}
+		Item target = (Item) current.middle;
+		return target;
+	}
+
+	/* GETRECURSIVEHELPER. */
+	private Item getRecursiveHelper(int index, int count) {
+		if (index >= size) {
+			return null;
+		} else if (count < index) {
+			current = current.removeLast
+			return getRecursiveHelper(index, count + 1);
+		} else if (count == index) {
+			Item target = (Item) current.middle;
+			return target;
+ 		}
+	}
+
+	/* Returns the item at the given index recursively. */
+	public Item getRecursive(int index) {
+		LinkedList current = sentinel;
+		return getRecursiveHelper(index, 0);
+	}
 }
