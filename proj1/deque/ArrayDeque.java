@@ -1,86 +1,80 @@
 package deque;
 
 public class ArrayDeque<Item> {
-	private Item[] items;
-	private int size;
-	private int nextFirst;
-	private int nextLast;
+    private Item[] items;
+    private int size;
+    private int nextFirst;
+    private int nextLast;
 
-	/* Creates an empty AList. */
-	public ArrayDeque() {
-		items = (Item[]) new Object[8];
-		size = 0;
-		nextFirst = 4;
-		nextLast = 5;
-	}
+    /* Creates an empty ArrayDeque. */
+    public ArrayDeque() {
+        items = (Item[]) new Object[8];
+        size = 0;
+        nextFirst = 4;
+        nextLast = 5;
+    }
 
-	/* nextFirst and nextLast value helper. True equals nextLast.*/
-	private int helper (boolean direction, int index) {
-		if (direction == true) {
-			index += 1;
-			if (index == items.length) {
-				index = 0;
-			}
-			return index;
-		} else {
-			index -= 1;
-			if (index == -1) {
-				index = items.length - 1;
-			}
-			return index;
-		}
-	}
+    /* Helper function to calculate next index based on direction. */
+    private int adjustIndex(boolean isNextLast, int index) {
+        if (isNextLast) {
+            return (index + 1) % items.length;
+        } else {
+            return (index - 1 + items.length) % items.length;
+        }
+    }
 
-	/* Add an item at the end of the AList. */
-	public void addLast(Item value) {
-		items[nextLast] = value;
-		helper(true, nextLast);
-		size += 1;
-	}
+    /* Adds an item to the end of the deque. */
+    public void addLast(Item value) {
+        items[nextLast] = value;
+        nextLast = adjustIndex(true, nextLast);
+        size += 1;
+    }
 
-	/* Add an item at the beginning of the AList. */
-	public void addFirst(Item value) {
-		items[nextFirst] = value;
-		helper(false, nextFirst);
-		size += 1;
-	}
+    /* Adds an item to the beginning of the deque. */
+    public void addFirst(Item value) {
+        items[nextFirst] = value;
+        nextFirst = adjustIndex(false, nextFirst);
+        size += 1;
+    }
 
-	/* Removes and returns the first item of the AList. */
-	public Item removeFirst() {
-		helper(true, nextFirst);
-		Item target = items[nextFirst];
-		items[nextFirst] = null;
-		size -= 1;
-		return target;
-	}
+    /* Removes and returns the first item of the deque. */
+    public Item removeFirst() {
+        nextFirst = adjustIndex(true, nextFirst);
+        Item target = items[nextFirst];
+        items[nextFirst] = null;
+        if (size > 0) {
+            size -= 1;
+        }
+        return target;
+    }
 
-	/* Removes and returns the last item of the AList. */
-	public Item removeLast() {
-		helper(false, nextLast);
-		Item target = items[nextLast];
-		items[nextLast] = null;
-		size -= 1;
-		return target;
-	}
+    /* Removes and returns the last item of the deque. */
+    public Item removeLast() {
+        nextLast = adjustIndex(false, nextLast);
+        Item target = items[nextLast];
+        items[nextLast] = null;
+        if (size > 0) {
+            size -= 1;
+        }
+        return target;
+    }
 
-	/* Gets the size of the AList. */
-	public int size() {
-		return size;
-	}
+    /* Gets the size of the deque. */
+    public int size() {
+        return size;
+    }
 
-	/* Gets the items at the given certain index. */
-	public Item get(int index) {
-		int times = nextFirst + 1;
-		int count = 0;
-		while (count < times) {
-			helper(true, index);
-			count += 1;
-		}
-		return items[index];
-	}
+    /* Gets the item at the given index, adjusting for wraparound. */
+    public Item get(int index) {
+        if (index < 0 || index >= size) {
+            return null;  // Return null if index is out of bounds
+        }
+        int actualIndex = (nextFirst + 1 + index) % items.length;
+        return items[actualIndex];
+    }
 
-	/* Returns if the AList is empty. */
-	public boolean isEmpty() {
-		return size == 0;
-	}
+    /* Returns true if the deque is empty. */
+    public boolean isEmpty() {
+        return size == 0;
+    }
 }
