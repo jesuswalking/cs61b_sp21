@@ -67,7 +67,7 @@ public class ArrayDeque<Item> {
     /* Gets the item at the given index, adjusting for wraparound. */
     public Item get(int index) {
         if (index < 0 || index >= size) {
-            return null;  // Return null if index is out of bounds
+            return null;                  // Return null if index is out of bounds
         }
         int actualIndex = (nextFirst + 1 + index) % items.length;
         return items[actualIndex];
