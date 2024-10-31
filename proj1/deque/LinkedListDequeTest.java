@@ -156,4 +156,26 @@ public class LinkedListDequeTest {
         assertEquals(null, lld2.get(0));
         assertEquals(null, lld2.get(6));
     }
+
+    @Test
+    /* Add some item to deque and get them; check if the getRecursive method is correct. */
+    public void getRecursiveDequeTest() {
+
+        System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
+
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
+        for (int i = 0; i < 100; i ++) {
+            lld1.addLast(i);
+        }
+
+        assertEquals((Integer) 0, lld1.getRecursive(0));
+        assertEquals((Integer) 27, lld1.getRecursive(27));
+        assertEquals((Integer) 99, lld1.getRecursive(99));
+        assertEquals(null, lld1.getRecursive(1000));
+
+        LinkedListDeque<Integer> lld2 = new LinkedListDeque<>();
+
+        assertEquals(null, lld2.getRecursive(0));
+        assertEquals(null, lld2.getRecursive(6));
+    }
 }

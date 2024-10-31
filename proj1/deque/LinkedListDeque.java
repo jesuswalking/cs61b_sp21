@@ -123,21 +123,22 @@ public class LinkedListDeque<Item> {
 	}
 
 	/* GETRECURSIVEHELPER. */
-	private Item getRecursiveHelper(int index, int count) {
+	private Item getRecursiveHelper(int index, int count, LinkedList current) {
 		if (index >= size) {
 			return null;
 		} else if (count < index) {
-			current = current.removeLast
-			return getRecursiveHelper(index, count + 1);
+			current = current.rest;
+			return getRecursiveHelper(index, count + 1, current);
 		} else if (count == index) {
 			Item target = (Item) current.middle;
 			return target;
  		}
+ 		return null;
 	}
 
 	/* Returns the item at the given index recursively. */
 	public Item getRecursive(int index) {
-		LinkedList current = sentinel;
-		return getRecursiveHelper(index, 0);
+		LinkedList current = sentinel.rest;
+		return getRecursiveHelper(index, 0, current);
 	}
 }
