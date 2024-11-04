@@ -141,4 +141,12 @@ public class LinkedListDeque<Item> {
 		LinkedList current = sentinel.rest;
 		return getRecursiveHelper(index, 0, current);
 	}
+
+	/* Returns whether it is equal, given a object o. */
+	public boolean equal(Object o) {
+		if (o instanceof LinkedList) {
+			
+		}
+		return false;
+	}
 }

@@ -17,9 +17,9 @@ public class ArrayDeque<Item> {
     /* Helper function to calculate next index based on direction. */
     private int adjustIndex(boolean isNextLast, int index) {
         if (isNextLast) {
-            return (index + 1) % items.length;
+            return (index + 1) % items.length;  // 向后
         } else {
-            return (index - 1 + items.length) % items.length;
+            return (index - 1 + items.length) % items.length;  // 向前
         }
     }
 
