@@ -145,7 +145,7 @@ public class LinkedListDeque<Item> {
 	/* Returns whether it is equal, given a object o. */
 	public boolean equal(Object o) {
 		if (o instanceof LinkedList) {
-			
+			return true;
 		}
 		return false;
 	}

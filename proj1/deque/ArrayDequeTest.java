@@ -19,4 +19,37 @@ public class ArrayDequeTest {
 		assertEquals((Integer)1, ad.get(0));
 		
 	}
+
+	@Test
+	public void printTest() {
+		ArrayDeque<Integer> pr = new ArrayDeque<>();
+
+		for (int i = 0; i < 10; i ++) {
+			pr.addLast(i);
+		}
+
+		pr.printDeque();
+	}
+
+	@Test
+	public void finalTest() {
+		ArrayDeque<Integer> fl = new ArrayDeque<>();
+
+		for (int i = 0; i < 99; i ++) {
+			fl.addLast(i);
+		}
+
+		for (int i = 0; i < 99; i ++) {
+			fl.addFirst(i);
+		}
+
+		fl.printDeque();
+
+		for (int i = 0; i < 198; i ++) {
+			fl.removeLast();
+		}
+
+		fl.printDeque();
+		System.out.println(fl.size());
+	}
 }
