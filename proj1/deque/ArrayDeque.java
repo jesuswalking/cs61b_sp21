@@ -75,7 +75,7 @@ public class ArrayDeque<Item> {
         }
 
         if (size > 0 && size < items.length * MIN_CAPACITY_RATIO && size > INITIAL_CAPACITY) {
-        	resize(items.length / 2);
+        	resize(items.length / 4);
         }
         return target;
     }
@@ -90,7 +90,7 @@ public class ArrayDeque<Item> {
         }
 
         if (size > 0 && size < items.length * MIN_CAPACITY_RATIO && size > INITIAL_CAPACITY) {
-        	resize(items.length / 2);
+        	resize(items.length / 4);
         }
         return target;
     }
