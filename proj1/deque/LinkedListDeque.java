@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<Item> {
+public class LinkedListDeque<Item> implements Deque<Item> {
 	
 	/* Naked recursive data structure. */
 	private class LinkedList<Item> {
@@ -31,11 +31,6 @@ public class LinkedListDeque<Item> {
 	public LinkedListDeque() {
 		sentinel = new LinkedList();
 		size = 0;
-	}
-
-	/* Returns true if LinkedListDeque is null, otherwise, return false */
-	public boolean isEmpty() {
-		return size == 0;
 	}
 
 	/* Returns the size of the LinkedListDeque. */
@@ -149,4 +144,28 @@ public class LinkedListDeque<Item> {
 		}
 		return false;
 	}
+
+	/* Check whether Object o is equal to this. */
+	@Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LinkedListDeque)) {
+            return false;
+        }
+        LinkedListDeque<?> lld = (LinkedListDeque<?>) o;
+        if (lld.size() != size) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (lld.get(i) != get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

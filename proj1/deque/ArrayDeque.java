@@ -1,6 +1,6 @@
 package deque;
 
-public class ArrayDeque<Item> {
+public class ArrayDeque<Item> implements Deque<Item> {
     private Item[] items;
     private int size;
     private int nextFirst;
@@ -109,11 +109,6 @@ public class ArrayDeque<Item> {
         return items[actualIndex];
     }
 
-    /* Returns true if the deque is empty. */
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
     /* Prints the ArrayDeque. */
     public void printDeque() {
     	int Index = (nextFirst + 1) % items.length;
@@ -122,5 +117,29 @@ public class ArrayDeque<Item> {
     		Index = (Index + 1) % items.length;
     	}
     	System.out.println();
+    }
+
+    /* Check whether Object o is equal to this. */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ArrayDeque)) {
+            return false;
+        }
+        ArrayDeque<?> ad = (ArrayDeque<?>) o;
+        if (ad.size() != size) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (ad.get(i) != get(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
