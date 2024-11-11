@@ -17,14 +17,14 @@ public class GuitarString {
     public GuitarString(double frequency) {
         buffer = new LinkedListDeque();
         int capacity = (int) Math.round(SR / frequency);
-        for (int i = 0; i < capacity; i ++) {
+        for (int i = 0; i < capacity; i++) {
             buffer.addLast(0.0);
         }
     }
 
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
-        for (int i = 0; i < buffer.size(); i ++) {
+        for (int i = 0; i < buffer.size(); i++) {
             buffer.removeFirst();
             double r = Math.random() - 0.5;
             buffer.addLast(r);
