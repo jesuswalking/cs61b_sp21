@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item>{
     private Item[] items;
     private int size;
@@ -14,6 +16,11 @@ public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item>{
         size = 0;
         nextFirst = INITIAL_CAPACITY - 1;
         nextLast = 0;
+    }
+
+    @Override
+    public Iterator<Item> iterator() {
+    	return new ArrayDequeIterator();
     }
 
     /* Resize the AList. */

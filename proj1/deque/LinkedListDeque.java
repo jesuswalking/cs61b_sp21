@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 	
 	/* Naked recursive data structure. */
@@ -26,6 +28,11 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 	/* Begins building data structure. */
 	private LinkedList sentinel;
 	private int size;
+
+	@Override
+	public Iterator<Item> iterator() {
+		return new LinkedListDequeIterator();
+	}
 
 	/* Returns an empty LinkedList. */
 	public LinkedListDeque() {
@@ -169,21 +176,21 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
         return true;
     }
 
-    private class ArrayDequeIterator implements Iterator<Item> {
-    	private int index;
+    private class LinkedListDequeIterator implements Iterator<Item> {
+    	private LinkedList<Item> p;
 
-    	ArrayDequeIterator() {
-    		index = 0;
+    	LinkedListDequeIterator() {
+    		p = sentinel.rest;
     	}
 
     	public boolean hasNext() {
-            return index < size;
-        }
+    		return p == sentinel;
+    	}
 
-        public Item next() {
-            Item item = get(index);
-            index += 1;
-            return item;
-        }
+    	public Item next() {
+    		Item item = p.middle;
+    		p = p.rest;
+    		return item;
+    	}
     }
 }
