@@ -2,16 +2,16 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 	
 	/* Naked recursive data structure. */
-	private class LinkedList<Item> {
+	private class LinkedList<T> {
 		public LinkedList prev;
-		public Item middle;
+		public T middle;
 		public LinkedList rest;
 
 		/* Creates a LinkedList. */
-		public LinkedList(LinkedList prev, Item middle, LinkedList rest) {
+		public LinkedList(LinkedList prev, T middle, LinkedList rest) {
 			this.prev = prev;
 			this.middle = middle;
 			this.rest = rest;
@@ -30,7 +30,7 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 	private int size;
 
 	@Override
-	public Iterator<Item> iterator() {
+	public Iterator<T> iterator() {
 		return new LinkedListDequeIterator();
 	}
 
@@ -56,29 +56,29 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 		System.out.println();
 	}
 
-	/* Adds an item at the front of the deque. */
-	public void addFirst(Item value) {
+	/* Adds an T at the front of the deque. */
+	public void addFirst(T value) {
 		LinkedList newNode = new LinkedList(sentinel, value, sentinel.rest);
 		sentinel.rest.prev = newNode;
 		sentinel.rest = newNode;
 		size += 1;
 	}
 
-	/* Adds an item at the end of the deque. */
-	public void addLast(Item value) {
+	/* Adds an T at the end of the deque. */
+	public void addLast(T value) {
 		LinkedList newNode = new LinkedList(sentinel.prev, value, sentinel);
 		sentinel.prev.rest = newNode;
 		sentinel.prev = newNode;
 		size += 1;
 	}
 
-	/* Returns and removes the first item from the deque. */
-	public Item removeFirst() {
+	/* Returns and removes the first T from the deque. */
+	public T removeFirst() {
 		if (size == 0) {
 			return null;
 		}
 
-		Item target = (Item) sentinel.rest.middle;
+		T target = (T) sentinel.rest.middle;
 		if (size == 1) {
 			sentinel.rest = sentinel;
 			sentinel.prev = sentinel;
@@ -90,13 +90,13 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 		return target;
 	}
 
-	/* Returns and removes the last item from the deque. */
-	public Item removeLast() {
+	/* Returns and removes the last T from the deque. */
+	public T removeLast() {
 		if (size == 0) {
 			return null;
 		}
 
-		Item target = (Item) sentinel.prev.middle;
+		T target = (T) sentinel.prev.middle;
 		if (size == 1) {
 			sentinel.rest = sentinel;
 			sentinel.prev = sentinel;
@@ -108,8 +108,8 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 		return target;
 	}
 
-	/* Returns the item at the given index. */
-	public Item get(int index) {
+	/* Returns the T at the given index. */
+	public T get(int index) {
 		if (index >= size) {
 			return null;
 		}
@@ -120,26 +120,26 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 			current = current.rest;
 			count += 1;
 		}
-		Item target = (Item) current.middle;
+		T target = (T) current.middle;
 		return target;
 	}
 
 	/* GETRECURSIVEHELPER. */
-	private Item getRecursiveHelper(int index, int count, LinkedList current) {
+	private T getRecursiveHelper(int index, int count, LinkedList current) {
 		if (index >= size) {
 			return null;
 		} else if (count < index) {
 			current = current.rest;
 			return getRecursiveHelper(index, count + 1, current);
 		} else if (count == index) {
-			Item target = (Item) current.middle;
+			T target = (T) current.middle;
 			return target;
  		}
  		return null;
 	}
 
-	/* Returns the item at the given index recursively. */
-	public Item getRecursive(int index) {
+	/* Returns the T at the given index recursively. */
+	public T getRecursive(int index) {
 		LinkedList current = sentinel.rest;
 		return getRecursiveHelper(index, 0, current);
 	}
@@ -155,42 +155,45 @@ public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 	/* Check whether Object o is equal to this. */
 	@Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (o == null) {
             return false;
         }
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof LinkedListDeque)) {
+
+        if (!(o instanceof Deque)) {
             return false;
         }
-        LinkedListDeque<?> lld = (LinkedListDeque<?>) o;
-        if (lld.size() != size) {
+        Deque<T> other = (Deque<T>) o;
+        if (size() != other.size()) {
             return false;
         }
-        for (int i = 0; i < size; i++) {
-            if (lld.get(i) != get(i)) {
+        for (int i = 0; i < size(); i++) {
+            T item1 = get(i);
+            T item2 = other.get(i);
+            if (!item1.equals(item2)) {
                 return false;
             }
         }
         return true;
     }
 
-    private class LinkedListDequeIterator implements Iterator<Item> {
-    	private LinkedList<Item> p;
+    private class LinkedListDequeIterator implements Iterator<T> {
+    	private LinkedList<T> p;
 
     	LinkedListDequeIterator() {
     		p = sentinel.rest;
     	}
 
     	public boolean hasNext() {
-    		return p == sentinel;
+    		return p != sentinel;
     	}
 
-    	public Item next() {
-    		Item item = p.middle;
+    	public T next() {
+    		T items = p.middle;
     		p = p.rest;
-    		return item;
+    		return items;
     	}
     }
 }
