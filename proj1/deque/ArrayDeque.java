@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
+public class ArrayDeque<T> implements Deque<T> ,Iterable<T> {
     private T[] Ts;
     private int size;
     private int nextFirst;
@@ -119,7 +119,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
     /* Prints the ArrayDeque. */
     public void printDeque() {
     	int Index = (nextFirst + 1) % Ts.length;
-    	for (int i = 0; i < size; i ++) {
+    	for (int i = 0; i < size; i++) {
     		System.out.print(Ts[Index] + " ");
     		Index = (Index + 1) % Ts.length;
     	}

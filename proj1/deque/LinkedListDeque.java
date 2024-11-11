@@ -2,23 +2,23 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
+public class LinkedListDeque<T> implements Deque<T> ,Iterable<T> {
 	
 	/* Naked recursive data structure. */
 	private class LinkedList<T> {
-		public LinkedList prev;
-		public T middle;
-		public LinkedList rest;
+		private LinkedList prev;
+		private T middle;
+		private LinkedList rest;
 
 		/* Creates a LinkedList. */
-		public LinkedList(LinkedList prev, T middle, LinkedList rest) {
+		private LinkedList(LinkedList prev, T middle, LinkedList rest) {
 			this.prev = prev;
 			this.middle = middle;
 			this.rest = rest;
 		}
 
 		/* Creates an empty LinkedList. */
-		public LinkedList() {
+		private LinkedList() {
 			this.prev = this;
 			this.middle = null;
 			this.rest = this;
@@ -142,14 +142,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 	public T getRecursive(int index) {
 		LinkedList current = sentinel.rest;
 		return getRecursiveHelper(index, 0, current);
-	}
-
-	/* Returns whether it is equal, given a object o. */
-	public boolean equal(Object o) {
-		if (o instanceof LinkedList) {
-			return true;
-		}
-		return false;
 	}
 
 	/* Check whether Object o is equal to this. */
