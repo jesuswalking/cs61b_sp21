@@ -1,6 +1,6 @@
 package deque;
 
-public class ArrayDeque<Item> implements Deque<Item> {
+public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item>{
     private Item[] items;
     private int size;
     private int nextFirst;
@@ -141,5 +141,23 @@ public class ArrayDeque<Item> implements Deque<Item> {
             }
         }
         return true;
+    }
+
+    private class ArrayDequeIterator implements Iterator<Item> {
+    	private int index;
+
+    	ArrayDequeIterator() {
+    		index = 0;
+    	}
+
+    	public boolean hasNext() {
+            return index < size;
+        }
+
+        public Item next() {
+            Item item = get(index);
+            index += 1;
+            return item;
+        }
     }
 }

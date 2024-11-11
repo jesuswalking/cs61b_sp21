@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<Item> implements Deque<Item> {
+public class LinkedListDeque<Item> implements Deque<Item>, Iterable<Item> {
 	
 	/* Naked recursive data structure. */
 	private class LinkedList<Item> {
@@ -167,5 +167,23 @@ public class LinkedListDeque<Item> implements Deque<Item> {
             }
         }
         return true;
+    }
+
+    private class ArrayDequeIterator implements Iterator<Item> {
+    	private int index;
+
+    	ArrayDequeIterator() {
+    		index = 0;
+    	}
+
+    	public boolean hasNext() {
+            return index < size;
+        }
+
+        public Item next() {
+            Item item = get(index);
+            index += 1;
+            return item;
+        }
     }
 }
