@@ -3,7 +3,7 @@ package deque;
 import java.util.Iterator;
 
 public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
-    private T[] Ts;
+    private T[] ts;
     private int size;
     private int nextFirst;
     private int nextLast;
@@ -12,7 +12,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     /* Creates an empty ArrayDeque. */
     public ArrayDeque() {
-        Ts = (T[]) new Object[INITIAL_CAPACITY];
+        ts = (T[]) new Object[INITIAL_CAPACITY];
         size = 0;
         nextFirst = INITIAL_CAPACITY - 1;
         nextLast = 0;
@@ -25,18 +25,18 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     /* Resize the AList. */
     private void resize(int capacity) {
-    	T[] a = (T[]) new Object[capacity];
-    	
-    	int firstIndex = (nextFirst + 1) % Ts.length;
+        T[] a = (T[]) new Object[capacity];
+
+        int firstIndex = (nextFirst + 1) % ts.length;
 
     	if (firstIndex < nextLast) { // 元素在List里是连续的
-    		System.arraycopy(Ts, firstIndex, a, 0, size);
+    		System.arraycopy(ts, firstIndex, a, 0, size);
     	} else { // 元素在List里不是连续的
-    		System.arraycopy(Ts, firstIndex, a, 0, Ts.length - firstIndex);
-    		System.arraycopy(Ts, 0, a, Ts.length - firstIndex, nextLast);
+    		System.arraycopy(ts, firstIndex, a, 0, ts.length - firstIndex);
+    		System.arraycopy(ts, 0, a, ts.length - firstIndex, nextLast);
     	}
 
-    	Ts = a;
+    	ts = a;
     	nextFirst = capacity - 1;
     	nextLast = size;
     }
@@ -44,30 +44,30 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     /* Helper function to calculate next index based on direction. */
     private int adjustIndex(boolean isNextLast, int index) {
         if (isNextLast) {
-            return (index + 1) % Ts.length;  // 向后
+            return (index + 1) % ts.length;  // 向后
         } else {
-            return (index - 1 + Ts.length) % Ts.length;  // 向前
+            return (index - 1 + ts.length) % ts.length;  // 向前
         }
     }
 
     /* Adds an T to the end of the deque. */
     public void addLast(T value) {
-    	if (size == Ts.length) {
+    	if (size == ts.length) {
     		resize(size * 2);
     	}
 
-        Ts[nextLast] = value;
+        ts[nextLast] = value;
         nextLast = adjustIndex(true, nextLast);
         size += 1;
     }
 
     /* Adds an T to the beginning of the deque. */
     public void addFirst(T value) {
-    	if (size == Ts.length) {
+    	if (size == ts.length) {
     		resize(size * 2);
     	}
 
-        Ts[nextFirst] = value;
+        ts[nextFirst] = value;
         nextFirst = adjustIndex(false, nextFirst);
         size += 1;
     }
@@ -75,14 +75,14 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     /* Removes and returns the first T of the deque. */
     public T removeFirst() {
         nextFirst = adjustIndex(true, nextFirst);
-        T target = Ts[nextFirst];
-        Ts[nextFirst] = null;
+        T target = ts[nextFirst];
+        ts[nextFirst] = null;
         if (size > 0) {
             size -= 1;
         }
 
-        if (size > 0 && size < Ts.length * MIN_CAPACITY_RATIO && size > INITIAL_CAPACITY) {
-        	resize(Ts.length / 4);
+        if (size > 0 && size < ts.length * MIN_CAPACITY_RATIO && size > INITIAL_CAPACITY) {
+        	resize(ts.length / 4);
         }
         return target;
     }
@@ -90,14 +90,14 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     /* Removes and returns the last T of the deque. */
     public T removeLast() {
         nextLast = adjustIndex(false, nextLast);
-        T target = Ts[nextLast];
-        Ts[nextLast] = null;
+        T target = ts[nextLast];
+        ts[nextLast] = null;
         if (size > 0) {
             size -= 1;
         }
 
-        if (size > 0 && size < Ts.length * MIN_CAPACITY_RATIO && size > INITIAL_CAPACITY) {
-        	resize(Ts.length / 4);
+        if (size > 0 && size < ts.length * MIN_CAPACITY_RATIO && size > INITIAL_CAPACITY) {
+        	resize(ts.length / 4);
         }
         return target;
     }
@@ -112,16 +112,16 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (index < 0 || index >= size) {
             return null;                  // Return null if index is out of bounds
         }
-        int actualIndex = (nextFirst + 1 + index) % Ts.length;
-        return Ts[actualIndex];
+        int actualIndex = (nextFirst + 1 + index) % ts.length;
+        return ts[actualIndex];
     }
 
     /* Prints the ArrayDeque. */
     public void printDeque() {
-    	int index = (nextFirst + 1) % Ts.length;
+    	int index = (nextFirst + 1) % ts.length;
     	for (int i = 0; i < size; i++) {
-    		System.out.print(Ts[index] + " ");
-    		index = (index + 1) % Ts.length;
+    		System.out.print(ts[index] + " ");
+    		index = (index + 1) % ts.length;
     	}
     	System.out.println();
     }
