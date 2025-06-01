@@ -1,5 +1,9 @@
 package gitlet;
 
+import static gitlet.Repository.*;
+import static gitlet.Utils.message;
+import static java.lang.System.exit;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -14,6 +18,7 @@ public class Main {
         switch(firstArg) {
             case "init":
                 // TODO: handle the `init` command
+                initPersistance();
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
