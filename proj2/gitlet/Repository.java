@@ -44,6 +44,16 @@ public class Repository {
         return dateFormat.format(timeStamp);
     }
 
+    // Return the headCommit.
+    public static Commit getHeadCommit() {
+        String headContent = readContentsAsString(HEAD_POINT);
+        String headHashName = headContent.split(":")[1];
+
+        File headCommit = join(COMMIT_DIR, headHashName);
+        Commit commit = readObject(headCommit, Commit.class);
+        return commit;
+    }
+
     //--------------------------------function methods below--------------------------------//
     // init methods
     public static void initPersistance() {
@@ -61,5 +71,63 @@ public class Repository {
         String brachName = "master";
         saveBranch(brachName, commitHashName);
         saveHEAD("master", commitHashName);
+    }
+
+    // add methods
+    public static void addStage(String addFileName) {
+        // if user doesnt input or incorrectly input a filename.
+        if (addFileName == null || addFileName.isEmpty()) {
+            System.out.println("Please enter a file name.");
+            exit(0);
+        }
+
+        File fileAdded = join(CWD, addFileName);
+
+        // if the file doesnt exist.
+        if (!fileAdded.exists()) {
+            System.out.println("File does not exist.");
+            exit(0);
+        }
+
+        // get the hashmap of the headcommit.
+        Commit headCommit = getHeadCommit();
+        HashMap<String, String> headCommitBlopMap = headCommit.getBlobMap();
+
+        // content of the file that is about to add.
+        String fileContent = readContentsAsString(fileAdded);
+
+        // senario 3.
+        if (!headCommitBlopMap.containsKey(addFileName)) {
+            //String blobHashName = sha1(fileContent);
+            //Blob blobAdded = new Blob(fileContent, blobHashName);
+            //blobAdded.saveBlob();
+
+            File blobPoint = join(ADD_STAGE_DIR, addFileName);
+            writeContents(blobPoint, fileContent);
+        }
+
+        // senario 4 and 5.
+        if (headCommitBlopMap.containsKey(addFileName)) {
+            String commitFileAddedInHash = headCommitBlopMap.get(addFileName);
+            String commitContent = getBlobContentFromName(commitFileAddedInHash);
+
+            if (!commitContent.equals(fileContent)) {
+                File blobPoint = join(ADD_STAGE_DIR, addFileName);
+                writeContents(blobPoint, fileContent);
+            }
+
+            if (commitContent.equals(fileContent)) {
+                List<String> fileAddedd = plainFilenamesIn(ADD_STAGE_DIR);
+                List<String> fileRemoved = plainFilenamesIn(REMOVE_STAGE_DIR);
+
+                if (fileAddedd.contains(addFileName)) {
+                    join(ADD_STAGE_DIR, addFileName).delete();
+                }
+
+                if (fileRemoved.contains(addFileName)) {
+                    join(REMOVE_STAGE_DIR, addFileName).delete();
+                }
+            }
+        }
     }
 }

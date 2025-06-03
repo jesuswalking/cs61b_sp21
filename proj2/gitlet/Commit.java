@@ -42,6 +42,10 @@ public class Commit implements Serializable{
         else this.blobMap.put(blobFileName, blobHashName);
     }
 
+    public HashMap getBlobMap() {
+        return this.blobMap;
+    }
+
     public void saveCommit() {
         String commitID = this.getHashName();
 
