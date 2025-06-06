@@ -14,6 +14,7 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO: what if args is empty?
+        checkEmptyArg(args);
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
@@ -22,9 +23,14 @@ public class Main {
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
-                addStage(args[1]);
+                String addFileName = args[1];
+                addStage(addFileName);
                 break;
             // TODO: FILL THE REST IN
+            case "commit":
+                String msg = args[1];
+                commitFile(msg);
+                break;
         }
     }
 }

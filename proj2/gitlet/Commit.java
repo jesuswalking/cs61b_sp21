@@ -42,6 +42,11 @@ public class Commit implements Serializable{
         else this.blobMap.put(blobFileName, blobHashName);
     }
 
+    public Commit(Commit commit) {
+        this.directParent = commit.directParent;
+        this.blobMap = commit.blobMap;
+    }
+
     public HashMap getBlobMap() {
         return this.blobMap;
     }
@@ -55,5 +60,27 @@ public class Commit implements Serializable{
 
     public String getHashName() {
         return sha1(this.message, dateToTimeStamp(this.timeStamp), this.directParent); // sha1 only takes one reference type.
+    }
+
+    public void setMessage(String msg) {
+        this.message = msg;
+    }
+
+    public void setDirectParent(String hashName) {
+        this.directParent = hashName;
+    }
+
+    public void setDateStamp(Date date) {
+        this.timeStamp = date;
+    }
+
+    public void addBlob(String fileName, String hashName) {
+        HashMap<String, String> blopMap = this.blobMap;
+        blopMap.put(fileName, hashName);
+    }
+
+    public void removeBlob(String fileName) {
+        HashMap<String, String> blopMap = this.blobMap;
+        blopMap.remove(fileName);
     }
 }
