@@ -1,9 +1,6 @@
 package hashmap;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -137,7 +134,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        int bucketIndex = Math.floorMod(key.hashCode(), buckets.length);
+        Collection<Node> chosenBucket = buckets[bucketIndex];
+        for (Node node : chosenBucket) {
+            if (node.key.equals(key)) {
+                return node.value;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -161,12 +165,27 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> theSet = new HashSet<K>();
+        for (int i = 0; i < buckets.length; i ++) {
+            for (Node node : buckets[i]) {
+                theSet.add(node.key);
+            }
+        }
+        return theSet;
     }
 
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        int bucketIndex = Math.floorMod(key.hashCode(), buckets.length);
+        Collection<Node> chosenBucket = buckets[bucketIndex];
+        for (Node node : chosenBucket) {
+            if (node.key.equals(key)) {
+                V oldValue = node.value;
+                chosenBucket.remove(node);
+                return oldValue;
+            }
+        }
+        return null;
     }
 
     @Override
