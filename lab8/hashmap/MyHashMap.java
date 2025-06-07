@@ -107,7 +107,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     // TODO: Implement the methods of the Map61B Interface below
     // Your code won't compile until you do so!
 
-    public void setupBuckets() {
+    private void setupBuckets() {
         for (int i = 0; i < buckets.length; i++) {
             buckets[i] = createBucket();
         }
