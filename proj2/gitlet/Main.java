@@ -31,6 +31,13 @@ public class Main {
                 String msg = args[1];
                 commitFile(msg);
                 break;
+            case "rm":
+                String fileName = args[1];
+                rmFile(fileName);
+                break;
+            case "log":
+                printLog(args);
+                break;
         }
     }
 }

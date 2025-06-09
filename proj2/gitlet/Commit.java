@@ -47,7 +47,19 @@ public class Commit implements Serializable{
         this.blobMap = commit.blobMap;
     }
 
-    public HashMap getBlobMap() {
+    public String getMessage() {
+        return this.message;
+    }
+
+    public Date getTimeStamp() {
+        return this.timeStamp;
+    }
+    
+    public String getDirectParent() {
+        return this.directParent;
+    }
+
+    public HashMap<String, String> getBlobMap() {
         return this.blobMap;
     }
 

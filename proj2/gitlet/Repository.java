@@ -61,6 +61,86 @@ public class Repository {
         return commit;
     }
 
+    public static void printCommitLog(Commit commit) {
+        System.out.println("===");
+        System.out.println("commit " + commit.getHashName());
+        System.out.println("Date: " + dateToTimeStamp(commit.getTimeStamp()));
+        System.out.println(commit.getMessage());
+        System.out.print("\n");
+    }
+
+    // Return the parent commit.
+    public static Commit getCommit(String directParent) {
+        List<String> commitFiles = plainFilenamesIn(COMMIT_DIR);
+        if (!commitFiles.contains(directParent)) {
+            return null;
+        }
+
+        File commitFile = join(COMMIT_DIR, directParent);
+        Commit commit = readObject(commitFile, Commit.class);
+        return commit;
+    }
+
+    // Return the commit with the given commitId.
+    public static Commit getCommitFromId(String commitId) {
+        List<String> commitList = plainFilenamesIn(COMMIT_DIR);
+        if (!commitList.contains(commitId)) {
+            return null;
+        }
+
+        File commitFile = join(COMMIT_DIR, commitId);
+        Commit commit = readObject(commitFile, Commit.class);
+        return commit;
+    }
+
+    public static boolean unTrackedFilesExists(Commit commit) {
+        List<String> CWDList = plainFilenamesIn(CWD);
+        Set<String> trackedFiles = commit.getBlobMap().keySet();
+
+        for (String fileName : CWDList) {
+            if (!trackedFiles.contains(fileName)) return true;
+        }
+        return false;
+    }
+
+    public static void checkOutBranch(String branchName) {
+        Commit headCommit = getHeadCommit();
+
+        if (branchName.equals(getHeadBranchName())) {
+            System.out.println("No need to checkout the current branch.");
+            exit(0);
+        }
+
+        // get the branchheadCommit
+        Commit branchHeadCommit = getBranchHeadCommit(branchName);
+        HashMap<String, String> branchHeadCommitBlobMap = branchHeadCommit.getBlobMap();
+        Set<String> fileNameSet = branchHeadCommitBlobMap.keySet();
+
+        List<String> CWDfiles = plainFilenamesIn(CWD);
+
+        if (unTrackedFilesExists(headCommit)) {
+            System.out.println("");
+            exit(0);
+        }
+
+        // qing kong CWD zhong dui ying de wenjian.
+        for (String workFile : CWDfiles) {
+            restrictedDelete(join(CWD, workFile));
+        }
+
+        // chong xin zai CWD li xie ru wen jian.
+        for (String fileName : fileNameSet) {
+            String hashName = branchHeadCommitBlobMap.get(fileName);
+            String content = getBlobContentFromName(hashName);
+            File newFileCWD = join(CWD, fileName);
+            writeContents(newFileCWD, content);
+        }
+
+        // saveHEAD dao dang qian de branch.
+        saveHEAD(branchName, branchHeadCommit.getHashName());
+    }
+
+
     //--------------------------------function methods below--------------------------------//
     // init methods
     public static void initPersistance() throws GitletException {
@@ -180,5 +260,114 @@ public class Repository {
 
         saveHEAD(getHeadBranchName(), newCommit.getHashName());
         saveBranch(getHeadBranchName(), newCommit.getHashName());
+    }
+
+    public static void rmFile(String fileName) throws GitletException {
+        if (fileName == null || fileName.isEmpty()) {
+            throw new GitletException("Please enter a file name.");
+        }
+
+        Commit headCommit = getHeadCommit();
+        HashMap<String, String> blobMap = headCommit.getBlobMap();
+        List<String> addStageFiles = plainFilenamesIn(ADD_STAGE_DIR);
+
+        if (!blobMap.containsKey(fileName)) {
+            if (!addStageFiles.contains(fileName)) {
+                throw new GitletException("No reason to remove the file.");
+            }
+        }
+
+        File addStageFile = join(ADD_STAGE_DIR, fileName);
+        if (addStageFile.exists()) {
+            addStageFile.delete();
+        }
+
+        // if the file is tracked, move it into removeDIR, then delete the file in the working DIR.
+        if (blobMap.containsKey(fileName)) {
+            File removeFile = join(REMOVE_STAGE_DIR, fileName);
+            writeContents(removeFile, "");
+
+            File removeFileCWD = join(CWD, fileName);
+            restrictedDelete(removeFileCWD);
+        }
+    }
+
+    // log method.
+    // use commit.directParent instance variable.
+    public static void printLog(String args[]) throws GitletException {
+        if (args.length != 1) throw new GitletException("Wrong operands.");
+
+        Commit headCommit = getHeadCommit();
+        Commit commit = headCommit;
+
+        while (!commit.getDirectParent().equals("")) {
+            printCommitLog(commit);
+            commit = getCommit(commit.getDirectParent());
+        }
+
+        printCommitLog(commit);
+    }   
+
+    // global-log method.
+    public static void printLogGlobal(String args[]) throws GitletException {
+        if (args.length != 1) throw new GitletException("Wrong operands");
+
+        List<String> commitFiles = plainFilenamesIn(COMMIT_DIR);
+        for (String commitFile : commitFiles) {
+            Commit commit = getCommit(commitFile);
+            printCommitLog(commit);
+        }   
+    }
+
+    //checkout method.
+    public static void checkOut(String[] args) {
+        String fileName;
+        // gitlet.Main checkout [branchName].
+        if (args.length == 2) {
+            checkOutBranch(args[1]);
+        } else if (args.length == 4) {
+        // gitlet.Main checkout [commitid] -- [filename].
+            if (!args[2].equals("--")) {
+                System.out.println("Incorrect operands.");
+                exit(0);
+            }
+
+            fileName = args[3];
+            String commitId = args[1];
+            Commit commit = getHeadCommit();
+
+            if (getCommitFromId(commitId) == null) {
+                System.out.println("No commit with that Id exists.");
+                exit(0);
+            } else {
+                commit = getCommitFromId(commitId);
+            }
+
+            if (!commit.getBlobMap().containsKey(fileName)) {
+                System.out.println("File dose not exist in that commit.");
+                exit(0);
+            } 
+
+            String blobName = commit.getBlobMap().get(fileName);
+            String targetBlobContent = getBlobContentFromName(blobName);
+
+            File fileInCWD = join(CWD, fileName);
+            overWriteFileWithBlob(fileInCWD, targetBlobContent);
+        } else if (args.length == 3) {
+            // checkout -- [file name].
+            Commit commit = getHeadCommit();
+            fileName = args[2];
+
+            if (!commit.getBlobMap().containsKey(fileName)) {
+                System.out.println("File does not exist in that commit.");
+                exit(0);
+            }
+
+            String blobName = commit.getBlobMap().get(fileName);
+            String targetBlobContent = getBlobContentFromName(blobName);
+
+            File fileInCWD = join(CWD, fileName);
+            writeContents(fileInCWD, targetBlobContent);
+        }    
     }
 }
