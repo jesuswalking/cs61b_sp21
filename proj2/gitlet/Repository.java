@@ -119,7 +119,7 @@ public class Repository {
         List<String> CWDfiles = plainFilenamesIn(CWD);
 
         if (unTrackedFilesExists(headCommit)) {
-            System.out.println("");
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
             exit(0);
         }
 
@@ -168,7 +168,7 @@ public class Repository {
         setUpPersistance();
 
         Date initialTimeStamp = new Date(0);
-        Commit initialCommit = new Commit("initial commmit", initialTimeStamp, "", null, null);
+        Commit initialCommit = new Commit("initial commit", initialTimeStamp, "", null, null);
         initialCommit.saveCommit();
 
         String commitHashName = initialCommit.getHashName();
@@ -202,12 +202,12 @@ public class Repository {
 
         // senario 3.
         if (!headCommitBlopMap.containsKey(addFileName)) {
-            //String blobHashName = sha1(fileContent);
-            //Blob blobAdded = new Blob(fileContent, blobHashName);
-            //blobAdded.saveBlob();
+            String blobHashName = sha1(fileContent);
+            Blob blobAdded = new Blob(fileContent, blobHashName);
+            blobAdded.saveBlob();
 
             File blobPoint = join(ADD_STAGE_DIR, addFileName);
-            writeContents(blobPoint, fileContent);
+            writeContents(blobPoint, blobHashName);
         }
 
         // senario 4 and 5.
@@ -216,8 +216,12 @@ public class Repository {
             String commitContent = getBlobContentFromName(commitFileAddedInHash);
 
             if (!commitContent.equals(fileContent)) {
+                String blobHashName = sha1(fileContent);
+                Blob blobAdded = new Blob(fileContent, blobHashName);
+                blobAdded.saveBlob();
+
                 File blobPoint = join(ADD_STAGE_DIR, addFileName);
-                writeContents(blobPoint, fileContent);
+                writeContents(blobPoint, blobHashName);
             }
 
             if (commitContent.equals(fileContent)) {
@@ -339,52 +343,56 @@ public class Repository {
     //checkout method.
     public static void checkOut(String[] args) {
         String fileName;
-        // gitlet.Main checkout [branchName].
         if (args.length == 2) {
+            //  git checkout branchName
             checkOutBranch(args[1]);
         } else if (args.length == 4) {
-        // gitlet.Main checkout [commitid] -- [filename].
+            //  git checkout [commit id] -- [file name]
             if (!args[2].equals("--")) {
-                System.out.println("Incorrect operands.");
+                message("Incorrect operands.");
                 exit(0);
             }
-
+            /* 获取到Blob对象 */
             fileName = args[3];
             String commitId = args[1];
             Commit commit = getHeadCommit();
 
+            /* 是否可以进行对objects文件夹的重构，实现hashMap结构
+                使得时间效率上不是线性, 而不是依靠链表查找？ */
             if (getCommitFromId(commitId) == null) {
-                System.out.println("No commit with that Id exists.");
+                System.out.println("No commit with that id exists.");
                 exit(0);
             } else {
                 commit = getCommitFromId(commitId);
             }
 
             if (!commit.getBlobMap().containsKey(fileName)) {
-                System.out.println("File dose not exist in that commit.");
-                exit(0);
-            } 
-
-            String blobName = commit.getBlobMap().get(fileName);
-            String targetBlobContent = getBlobContentFromName(blobName);
-
-            File fileInCWD = join(CWD, fileName);
-            overWriteFileWithBlob(fileInCWD, targetBlobContent);
-        } else if (args.length == 3) {
-            // checkout -- [file name].
-            Commit commit = getHeadCommit();
-            fileName = args[2];
-
-            if (!commit.getBlobMap().containsKey(fileName)) {
                 System.out.println("File does not exist in that commit.");
                 exit(0);
             }
-
             String blobName = commit.getBlobMap().get(fileName);
             String targetBlobContent = getBlobContentFromName(blobName);
 
-            File fileInCWD = join(CWD, fileName);
-            writeContents(fileInCWD, targetBlobContent);
-        }    
+            /* 将Blob对象中的内容覆盖working directory中的内容 */
+            File fileInWorkDir = join(CWD, fileName);
+            overWriteFileWithBlob(fileInWorkDir, targetBlobContent);
+
+        } else if (args.length == 3) {
+            //  git checkout -- [file name]
+            /* 获取到Blob对象中的内容 */
+            fileName = args[2];
+            Commit headCommit = getHeadCommit();
+            if (!headCommit.getBlobMap().containsKey(fileName)) {
+                System.out.println("File does not exist in that commit.");
+                exit(0);
+            }
+            String blobName = headCommit.getBlobMap().get(fileName);
+            String targetBlobContent = getBlobContentFromName(blobName);
+
+            /* 将Blob对象中的内容覆盖working directory中的内容 */
+            File fileInWorkDir = join(CWD, fileName);
+            overWriteFileWithBlob(fileInWorkDir, targetBlobContent);
+
+        }
     }
 }

@@ -24,7 +24,7 @@ public class Blob implements Serializable {
 
 	// 将blob对象保存进BLOB_FOLDER文件,内容就是blob文件的content
 	public void saveBlob() {
-		if (!this.filePath.exists()) writeContents(BLOBS_DIR, this.content);
+		if (!this.filePath.exists()) writeContents(filePath, this.content);
 	}
 
 	// Return the content of Blob, return null if there is no content.
