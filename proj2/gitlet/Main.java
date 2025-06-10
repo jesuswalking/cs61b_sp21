@@ -38,6 +38,9 @@ public class Main {
             case "log":
                 printLog(args);
                 break;
+            case "checkout":
+                checkOut(args);
+                break;
         }
     }
 }

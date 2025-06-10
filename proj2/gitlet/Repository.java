@@ -140,6 +140,23 @@ public class Repository {
         saveHEAD(branchName, branchHeadCommit.getHashName());
     }
 
+    // Return the branchheadCommit.
+    public static Commit getBranchHeadCommit(String branchName) {
+        List<String> branchList = plainFilenamesIn(HEAD_DIR);
+
+        if (!branchList.contains(branchName)) {
+            System.out.println("No such branch exists.");
+            exit(0);
+        }
+
+        File branchFile = join(HEAD_DIR, branchName);
+        String commitHashId = readContentsAsString(branchFile);
+
+        File commitFile = join(COMMIT_DIR, commitHashId);
+        Commit commit = readObject(commitFile, Commit.class);
+        return commit;
+
+    }
 
     //--------------------------------function methods below--------------------------------//
     // init methods
