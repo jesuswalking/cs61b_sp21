@@ -41,6 +41,13 @@ public class Main {
             case "checkout":
                 checkOut(args);
                 break;
+            case "find":
+                String commitMsg = args[1];
+                findCommit(commitMsg);
+                break;
+            case "status":
+                status();
+                break;
         }
     }
 }

@@ -158,6 +158,26 @@ public class Repository {
 
     }
 
+    public static void printStatus(String field, Collection<String> fileList, String branchName) {
+        System.out.println("=== " + field + " ===");
+
+        if (field.equals("Branches")) {
+            for (String file : fileList) {
+                if (file.equals(branchName)) {
+                    System.out.println("*" + file);
+                } else {
+                    System.out.println(file);
+                }
+            }
+        } else {
+            for (String file : fileList) {
+                System.out.println(file);
+            }
+        }
+
+        System.out.println("\n");
+    }
+
     //--------------------------------function methods below--------------------------------//
     // init methods
     public static void initPersistance() throws GitletException {
@@ -395,4 +415,60 @@ public class Repository {
 
         }
     }
+
+    // find methods.
+    public static void findCommit(String commitMsg) {
+        boolean isfind = false;
+        List<String> commitList = plainFilenamesIn(COMMIT_DIR);
+        for (String commitId : commitList) {
+            Commit commit = getCommitFromId(commitId);
+            if (commit.getMessage().equals(commitMsg)) {
+                System.out.println(commitId);
+                isfind = true;
+            }
+        }
+
+        if (!isfind) {
+            System.out.println("Found no commit with that message.");
+        }
+    }
+
+    // status methods. finished branch, addstage, removestage.
+    public static void status() {
+        File gitletFile = join(CWD, "gitlet");
+        if (!gitletFile.exists()) {
+            System.out.println("Not in an initialized Gitlet directory.");
+            exit(0);
+        }
+
+        String branchName = getHeadBranchName();
+
+        List<String> filesInHead = plainFilenamesIn(HEAD_DIR);
+        List<String> filesInAdd = plainFilenamesIn(ADD_STAGE_DIR);
+        List<String> filesInRm = plainFilenamesIn(REMOVE_STAGE_DIR);
+
+        printStatus("Branches", filesInHead, branchName);
+        printStatus("Staged Files", filesInAdd, branchName);
+        printStatus("Removed Files", filesInRm, branchName);
+
+
+    }
+
+    // branch method.
+    public static void createBranch(String branchName) {
+        List<String> branchList = plainFilenamesIn(HEAD_DIR);
+        for (String branch : branchList) {
+            if (branch.equals(branchName)) {
+                System.out.println("A branch with that name already exists.");
+                exit(0);
+            }
+        }
+
+        Commit headCommit = getHeadCommit();
+        String commitId = headCommit.getHashName();
+        saveBranch(branchName, commitId);
+    }
+
+    // rm-branch method.
+    
 }
