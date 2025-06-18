@@ -48,6 +48,9 @@ public class Main {
             case "status":
                 status();
                 break;
+            case "rm-branch":
+                removeBranch(String branchName);
+                break;
         }
     }
 }

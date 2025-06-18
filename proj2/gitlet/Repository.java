@@ -180,10 +180,11 @@ public class Repository {
 
     //--------------------------------function methods below--------------------------------//
     // init methods
-    public static void initPersistance() throws GitletException {
+    public static void initPersistance() {
         if (GITLET_DIR.exists()) {
-            throw new GitletException("A Gitlet version-control system already exists in the current directory.");
-            //exit(0);
+            System.out.println("A Gitlet version-control "
+                    + "system already exists in the current directory.");
+            exit(0);
         }
         setUpPersistance();
 
@@ -470,5 +471,20 @@ public class Repository {
     }
 
     // rm-branch method.
-    
+    public static void removeBranch(String branchName) {
+        File branchFile = join(HEAD_DIR, branchName);
+        if (!branchFile.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            exit(0);
+        }
+
+        Commit headCommit = getHeadCommit();
+        if (getHeadBranchName().equals(branchName)) {
+            System.out.println("Cannot remove the current branch.");
+            exit(0);
+        }
+
+        File branchDelete = join(HEAD_DIR, branchName);
+        branchDelete.delete();
+    }   
 }
