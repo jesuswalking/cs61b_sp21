@@ -49,7 +49,7 @@ public class Main {
                 status();
                 break;
             case "rm-branch":
-                removeBranch(String branchName);
+                removeBranch(args[1]);
                 break;
         }
     }
