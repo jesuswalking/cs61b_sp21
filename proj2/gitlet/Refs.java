@@ -21,7 +21,7 @@ public class Refs {
     public static final File HEAD_DIR = join(REFS_DIR, "heads");
 
     // the current .gitlet's head pointer.
-    public static final File HEAD_POINT = join(HEAD_DIR, "HEAD");
+    public static final File HEAD_POINT = join(REFS_DIR, "HEAD");
 
     // the stage directory.
     public static final File ADD_STAGE_DIR = join(GITLET_DIR, "addstage");
