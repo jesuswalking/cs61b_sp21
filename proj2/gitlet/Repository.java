@@ -158,11 +158,12 @@ public class Repository {
 
     }
 
-    public static void printStatus(String field, Collection<String> fileList, String branchName) {
+    public static void printStatusPerField(String field, Collection<String> files,
+                                           String branchName) {
         System.out.println("=== " + field + " ===");
-
         if (field.equals("Branches")) {
-            for (String file : fileList) {
+            for (var file : files) {
+                // 如果是head文件
                 if (file.equals(branchName)) {
                     System.out.println("*" + file);
                 } else {
@@ -170,12 +171,26 @@ public class Repository {
                 }
             }
         } else {
-            for (String file : fileList) {
+            for (var file : files) {
                 System.out.println(file);
             }
         }
 
-        System.out.println("\n");
+        System.out.print("\n");
+    }
+
+    public static void printStatusWithStatus(String field, Collection<String> modifiedFiles,
+                                             Collection<String> deletedFiles) {
+        System.out.println("=== " + field + " ===");
+
+        for (var file : modifiedFiles) {
+            System.out.println(file + " " + "(modified)");
+        }
+        for (var file : deletedFiles) {
+            System.out.println(file + " " + "(deleted)");
+        }
+
+        System.out.print("\n");
     }
 
     //--------------------------------function methods below--------------------------------//
@@ -435,24 +450,85 @@ public class Repository {
     }
 
     // status methods. finished branch, addstage, removestage.
-    public static void status() {
+    public static void showStatus() {
         File gitletFile = join(CWD, ".gitlet");
         if (!gitletFile.exists()) {
-            System.out.println("Not in an initialized Gitlet directory.");
+            message("Not in an initialized Gitlet directory.");
             exit(0);
         }
-
+        /* 获取当前分支名 */
+        Commit headCommit = getHeadCommit();
         String branchName = getHeadBranchName();
 
         List<String> filesInHead = plainFilenamesIn(HEAD_DIR);
         List<String> filesInAdd = plainFilenamesIn(ADD_STAGE_DIR);
         List<String> filesInRm = plainFilenamesIn(REMOVE_STAGE_DIR);
+        HashMap<String, String> blobMap = headCommit.getBlobMap();
+        Set<String> trackFileSet = blobMap.keySet();  // commit中跟踪着的文件名
+        LinkedList<String> modifiedFilesList = new LinkedList<>();
+        LinkedList<String> deletedFilesList = new LinkedList<>();
+        LinkedList<String> untrackFilesList = new LinkedList<>();
 
-        printStatus("Branches", filesInHead, branchName);
-        printStatus("Staged Files", filesInAdd, branchName);
-        printStatus("Removed Files", filesInRm, branchName);
+        printStatusPerField("Branches", filesInHead, branchName);
+        printStatusPerField("Staged Files", filesInAdd, branchName);
+        printStatusPerField("Removed Files", filesInRm, branchName);
 
+        /* 开始进行：Modifications Not Staged For Commit */
+        /* 暂存已经添加，但内容与工作目录中的内容不同 */
+        for (String fileAdd : filesInAdd) {
+            /* 如果文件在暂存区存在，但是在工作区不存在，则直接加入modifiedFilesList */
+            if (!join(CWD, fileAdd).exists()) {
+                deletedFilesList.add(fileAdd);
+                continue;
+            }
+            String workFileContent = readContentsAsString(join(CWD, fileAdd));
+            String addStageBlobName = readContentsAsString(join(ADD_STAGE_DIR, fileAdd));
+            String addStageFileContent = readContentsAsString(join(BLOBS_DIR, addStageBlobName));
+            if (!workFileContent.equals(addStageFileContent)) {
+                // 当工作区和addStage中文件内容不一致，则进入modifiedFilesList
+                modifiedFilesList.add(fileAdd);
+            }
+        }
 
+        /* 在当前commit中跟踪，在工作目录中更改，但未暂存 */
+        for (String trackFile : trackFileSet) {
+            if (trackFile.isEmpty() || trackFile == null) {
+                continue;
+            }
+            File workFile = join(CWD, trackFile);
+            File fileInRmStage = join(REMOVE_STAGE_DIR, trackFile);
+            if (!workFile.exists()) {      // 当工作区文件直接不存在的情况
+                if (!fileInRmStage.exists()) {
+                    deletedFilesList.add(trackFile);       // 在rmStage中无此文件，同时工作区也没有这个文件
+                }
+                continue;
+            }
+            if (!filesInAdd.contains(trackFile)) { // 当addStage中没有此文件
+                String workFileContent = readContentsAsString(workFile);
+                String blobFileContent = readContentsAsString(join(BLOBS_DIR,
+                        blobMap.get(trackFile)));
+                if (!workFileContent.equals(blobFileContent)) {
+                    // 当正在track的文件被修改，但addStage中无此文件，则进入modifiedFilesList
+                    modifiedFilesList.add(trackFile);
+                }
+            }
+        }
+        printStatusWithStatus("Modifications Not Staged For Commit",
+                modifiedFilesList, deletedFilesList);
+        /* 开始进行：Untracked Files */
+        List<String> workFiles = plainFilenamesIn(CWD);
+        for (String workFile : workFiles) {
+            if (!filesInAdd.contains(workFile)
+                    && !filesInRm.contains(workFile)
+                    && !trackFileSet.contains(workFile)) {
+                untrackFilesList.add(workFile);
+                continue;
+            }
+            if (filesInRm.contains(workFile)) {
+                untrackFilesList.add(workFile);
+            }
+        }
+        printStatusPerField("Untracked Files", untrackFilesList, branchName);
     }
 
     // branch method.

@@ -46,7 +46,7 @@ public class Main {
                 findCommit(commitMsg);
                 break;
             case "status":
-                status();
+                showStatus();
                 break;
             case "rm-branch":
                 removeBranch(args[1]);
