@@ -436,7 +436,7 @@ public class Repository {
 
     // status methods. finished branch, addstage, removestage.
     public static void status() {
-        File gitletFile = join(CWD, "gitlet");
+        File gitletFile = join(CWD, ".gitlet");
         if (!gitletFile.exists()) {
             System.out.println("Not in an initialized Gitlet directory.");
             exit(0);
